@@ -18,6 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 import recommonmark
+import myst_parser
 
 project = 'Personal Bolg'
 copyright = '2021, Suhao'
