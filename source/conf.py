@@ -34,7 +34,7 @@ release = '1.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'recommonmark',
+    # 'recommonmark',
     'sphinx_markdown_tables',
     'myst_parser'
 ]
@@ -56,7 +56,7 @@ exclude_patterns = []
 
 source_suffix = {
     '.rst': 'restructuredtext'
-    # '.md': 'markdown'
+    '.md': 'markdown'
 }
 
 math_number_all = True
