@@ -15,5 +15,6 @@ Welcome to Personal Bolg's documentation!
    python/index
    reading/index
    movie/index
+   papers/index
    about
 
