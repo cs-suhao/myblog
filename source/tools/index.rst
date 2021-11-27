@@ -6,3 +6,7 @@
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   Conan
+   Git和GithubDesktop使用
+   
