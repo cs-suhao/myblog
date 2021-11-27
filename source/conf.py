@@ -55,8 +55,8 @@ language = 'zh_CN'
 exclude_patterns = []
 
 source_suffix = {
-    '.rst': 'restructuredtext',
-    '.md': 'markdown'
+    '.rst': 'restructuredtext'
+    # '.md': 'markdown'
 }
 
 math_number_all = True
