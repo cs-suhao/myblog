@@ -17,6 +17,8 @@
 
 # -- Project information -----------------------------------------------------
 
+import recommonmark
+
 project = 'Personal Bolg'
 copyright = '2021, Suhao'
 author = 'Suhao'
