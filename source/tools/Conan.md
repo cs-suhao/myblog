@@ -1,9 +1,3 @@
----
-title: Conan
-mathjax: false
-date: 2021-11-01 14:56:13
-tags:
----
 
 由于学长的on-VHLL项目代码有用到Conan管理C＋＋库，同时我在自己的Ubuntu上安装使用的时候出现了非常多的问题，因此就去翻看了Conan的官方文档，现总结学习一下。
 

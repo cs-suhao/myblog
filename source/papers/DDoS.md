@@ -1,9 +1,4 @@
----
-title: DDOS论文
-mathjax: true
-date: 2021-04-30 10:12:43
-tags: 论文整理
----
+# DDoS论文
 
 [TOC]
 

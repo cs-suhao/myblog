@@ -8,5 +8,5 @@
    :caption: Contents:
 
    Conan
-   Git和GithubDesktop使用
+   Git&GithubDesktop
    
