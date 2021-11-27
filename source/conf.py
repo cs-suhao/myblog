@@ -31,8 +31,9 @@ release = '1.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "recommonmark",
-    "sphinx_markdown_tables"
+    'recommonmark',
+    'sphinx_markdown_tables',
+    'myst_parser'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -50,7 +51,12 @@ language = 'zh_CN'
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown'
+}
 
+math_number_all = True
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
