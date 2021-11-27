@@ -32,7 +32,6 @@ release = '1.0'
 # ones.
 extensions = [
     'recommonmark',
-    'sphinx_markdown_tables',
     'myst_parser'
 ]
 
