@@ -55,7 +55,7 @@ language = 'zh_CN'
 exclude_patterns = []
 
 source_suffix = {
-    '.rst': 'restructuredtext'
+    '.rst': 'restructuredtext',
     '.md': 'markdown'
 }
 
