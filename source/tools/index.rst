@@ -9,4 +9,5 @@
 
    Conan
    Git&GithubDesktop
+   Sphinx&GitHub
    
