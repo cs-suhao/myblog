@@ -3,18 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Personal Bolg's documentation!
+cs-suhao的个人博客
 =========================================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: 首页:
 
    c++/index
-   tools/index
    python/index
+   tools/index
+   papers/index
    reading/index
    movie/index
-   papers/index
    about
 
