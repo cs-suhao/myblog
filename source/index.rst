@@ -13,7 +13,9 @@ cs-suhao的个人博客
    c++/index
    python/index
    tools/index
+   linux/index
    papers/index
+   network/index
    reading/index
    movie/index
    about
