@@ -10,4 +10,5 @@
    Conan
    Git&GithubDesktop
    Sphinx&GitHub
+   ubuntu-error
    
