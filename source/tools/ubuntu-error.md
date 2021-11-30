@@ -25,3 +25,28 @@ sudo rm /var/lib/dpkg/lock
 ```
 
 
+### 如何安装pip
+用系统自带包管理器安装，命令如下：
+```shell
+sudo apt-get install python3-pip
+
+pip3 --version
+
+//这一句有问题
+python3 -m pip install --upgrade pip
+```
+
+在前两句进行安装`pip3`以后，对于pip进行更新出现了错误，有两个版本的pip同时出现了。[官方链接给出了回答](https://github.com/pypa/pip/issues/5599)。
+
+官方指出原因在于系统包管理器安装的pip归发行版所有，而如果进行`pip install -U pip`则会更新另一个版本，并且官方提醒不能将`sudo` 和 `pip`一起使用。
+
+#### 推荐
+在pip的官方文档中给出了安装方法：
+1. 下载[`get-pip.py`](https://bootstrap.pypa.io/get-pip.py)文件
+2. 进入文件夹，运行`python3 get-pip.py`
+
+之后使用`pip`安装包的时候，一定要使用如下命令：
+```shell
+python3 -m pip install *
+python3 -m pip --version
+```
