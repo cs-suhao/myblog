@@ -1,10 +1,10 @@
 .. c++ language study.
 
-C++
+Cpp
 ========================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   C++_Concurrency_in_Action/index
+   CppThread/index
