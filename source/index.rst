@@ -18,5 +18,6 @@ cs-suhao的个人博客
    network/index
    reading/index
    movie/index
+   cook/index
    about
 
