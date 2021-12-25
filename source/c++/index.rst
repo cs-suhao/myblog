@@ -6,3 +6,5 @@ C++
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   C++ Concurrency in Action/index
