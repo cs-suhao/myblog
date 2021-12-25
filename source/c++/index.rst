@@ -7,4 +7,4 @@ C++
    :maxdepth: 2
    :caption: Contents:
 
-   C++ Concurrency in Action/index
+   C++_Concurrency_in_Action/index
