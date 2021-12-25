@@ -10,7 +10,7 @@ cs-suhao的个人博客
    :maxdepth: 2
    :caption: 首页:
 
-   c++/index
+   cpp/index
    python/index
    tools/index
    linux/index
