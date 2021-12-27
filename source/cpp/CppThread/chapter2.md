@@ -200,7 +200,55 @@ void edit_document(std::string const& filename)
   }
 }
 ```
-如果用户选择打开新文档，则会启动新线程1，然后2进行线程分离。
+如果用户选择打开新文档，则会启动新线程1，这里还将参数传递到新线程，然后2进行线程分离。
 
 ## 2.2 向线程函数传递参数
+
+在向`std::thread`构造函数传递参数需要注意，默认参数需要拷贝到线程独立内存中，即使参数是引用的形式，也可以在新线程中进行访问。
+
+但是需要注意，新线程的参数拷贝是不会进行类型检查的，因此如果两者类型不匹配，线程的上下文中会完成类型转换。
+
+- 指针变量传参
+
+当指向动态变量的指针作为参数传递时，需要注意该变量可能会销毁。
+
+```cpp
+void f(int i,std::string const& s);
+void oops(int some_param)
+{
+  char buffer[1024]; // 1
+  sprintf(buffer, "%i",some_param);
+  std::thread t(f,3,buffer); // 2
+  std::thread t(f,3,std::string(buffer)); // 3
+  t.detach();
+}
+```
+在这个例子中，buffer是一个指针变量，指向本地变量，然后传递到新线程中，另外这里提供的是`char *`，而想要的是`std::string`，但是函数可能在转换前就崩溃，这里就会产生错误。
+正确的做法如3.
+
+- 引用变量传参
+
+传递引用变量又可能出现另一种情况，我们期望传递原值的引用，但是由于整个对象被复制了，传递的就是拷贝量的引用。
+
+```cpp
+void update_data_for_widget(widget_id w,widget_data& data); // 1
+void oops_again(widget_id w)
+{
+  widget_data data;
+  std::thread t(update_data_for_widget,w,data); // 2
+  std::thread t(update_data_for_widget,w,std::ref(data)); // 4
+  display_status();
+  t.join();
+  process_widget_data(data); // 3
+}
+```
+在上面的例子中，传递给函数的是data变量经过线程拷贝的引用，而不是原值的引用，因此当线程结束以后，该data变量的值并没有被修改，解决方案是使用`std::ref`将参数转成引用的形式。
+
+- 成员函数指针传参
+
+
+- 类对象传参
+
+
+- 智能指针传参
 
