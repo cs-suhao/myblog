@@ -173,3 +173,34 @@ void f()
 ### 2.1.4 后台运行线程
 
 使用detach()会让线程再后台运行，主线程不会等待该线程结束，也无法使用`std::thread`对象引用。如果调用detach()分离线程，之后相应的`std::thread`对象就和实际执行的线程无关，并且该线程也无法加入。
+
+在使用detach()前，同样需要检查是否能对该`std::thread`对象使用，和join()一样，利用joinable()函数进行检查，如果返回的是true就可以使用。
+
+文字办公软件可以认为是分离线程的具体用例，当WPS同时处理多个文档，虽然每一个文档页面是独立的，但是却运行在同一个应用实例中，一种内部处理方式就是让每一个文档拥有自己的线程，每一个线程运行同样的代码，并隔离不同窗口处理的数据。
+
+下面的代码展示了这样的思路：
+
+```cpp
+void edit_document(std::string const& filename)
+{
+  open_document_and_display_gui(filename);
+  while(!done_editing())
+  {
+    user_command cmd=get_user_input();
+    if(cmd.type==open_new_document)
+    {
+      std::string const new_name=get_filename_from_user();
+      std::thread t(edit_document,new_name);  // 1
+      t.detach();  // 2
+    }
+    else
+    {
+       process_user_input(cmd);
+    }
+  }
+}
+```
+如果用户选择打开新文档，则会启动新线程1，然后2进行线程分离。
+
+## 2.2 向线程函数传递参数
+
