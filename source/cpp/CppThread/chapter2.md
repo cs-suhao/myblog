@@ -246,9 +246,47 @@ void oops_again(widget_id w)
 
 - 成员函数指针传参
 
+`std::thread`构造函数可以传递一个成员函数指针作为线程函数，并提供合适的对象的指针作为第一个参数。
 
-- 类对象传参
-
+```cpp
+class X
+{
+  public:
+    void do_length_work();
+};
+X my_x;
+std::thread t(&X::do_length_work, &my_x);
+```
+这段代码中，新线程将my_x.do_length_work()作为线程函数，my_x的地址作为指针对象提供给函数，如果有对应成员函数的参数，直接在构造函数的第三个参数后加。
 
 - 智能指针传参
+
+我们可以通过向`std::thread`对象传递只能**移动**不能**拷贝**的参数来解决，两者的区别就像剪切和复制。
+
+```cpp
+void process_big_object(std::unique_ptr<big_object>);
+std::unique_ptr<big_object> p(new big_object);
+p->prepare_data(42);
+std::thread t(process_big_object,std::move(p));
+```
+
+
+### 2.2.1 线程传参可能遇到的问题
+
+- 问题一：传入临时的callable对象，编译器会认为是函数声明
+- 问题二：因为传入指针or局部变量的引用，导致thread function可能访问已经销毁的内容
+- 问题三：因为传入指针or局部变量的引用，导致thread function入参时因强制类型转换而访问已被销毁的内容
+- 问题四：callable对象参数要求引用，但实际传入的时内部拷贝对象的引用
+
+问题二和问题三出现的原因都是因为主线程和新线程的生命周期不一致导致的，梳理以下`std::thread`对象创建以后的经过：
+1. 原线程：调用`std::thread`的构造函数or拷贝赋值运算符
+2. 原线程：callable对象和参数被拷贝到新创建的`std::thread`内部
+3. 新线程：传入参数到callable对象，这里可能会产生强制类型转换
+4. 新线程：调用callable对象
+5. ……
+
+这里就是在第二步和第三步出现的问题。
+
+
+## 2.3 转移线程所有权
 
