@@ -290,3 +290,153 @@ std::thread t(process_big_object,std::move(p));
 
 ## 2.3 转移线程所有权
 
+C++中通过`std::thread`对象管理线程，而`std::thread`对象本身并非运行的线程，而是该对象和相应的线程绑定，拥有其所有权。因此，线程的所有权是可以在不同`std::thread`对象中转移的，就如同智能指针`std::unique_ptr`一样，可以移动但是不能拷贝。下面的例子中创建了两个执行线程，并且在三个`std::thread`实例中转移所有权。
+
+```cpp
+void some_function();
+void some_other_function();
+std::thread t1(some_function);            // 1
+std::thread t2=std::move(t1);            // 2
+t1=std::thread(some_other_function);    // 3
+std::thread t3;                            // 4
+t3=std::move(t2);                        // 5
+t1=std::move(t3);                        // 6 赋值操作将使程序崩溃
+```
+注释：
+1. 创建线程t1
+2. 将some_function线程的所有权转移给t2，此时t1和执行线程无任何关联
+3. 临时std::thread对象启动some_other_function线程，并隐式转移给t1
+4. 默认构造t3，无任何关联线程
+5. 将t2所拥有的some_function线程转移给t3，此时t2无任何关联线程
+6. 将t3所有用的some_function线程转移给t1，但是t1此时拥有some_other_function线程，无法转移，出现错误
+
+这里的例子不仅仅说明线程所有权是可以通过`std::move()`转移，同时还说明了线程只能被转移而不能被丢弃，只能等待完成或分离，因为6出错了。
+
+线程支持移动，也就意味着线程的所有权可以在函数外进行转移，函数可以返回线程对象，而也就可以作为参数进行传递：
+
+```cpp
+std::thread f()
+{
+  void some_function();
+  return std::thread(some_function);
+}
+std::thread g()
+{
+  void some_other_function(int);
+  std::thread t(some_other_function,42);
+  return t;
+}
+
+void f(std::thread t);
+void g()
+{
+  void some_function();
+  f(std::thread(some_function));
+  std::thread t(some_function);
+  f(std::move(t));
+}
+```
+
+### 2.3.1 用线程所有权改写RAll
+
+thread_guard类原先使用`std::thread`对象的引用，现在由于知道了std::thread对象支持移动，并且拥有其线程的所有权，我们可以改写：
+
+原始RAll：
+```cpp
+class thread_guard
+{
+  std::thread& t;
+public:
+  // explicit避免隐式赋值
+  explicit thread_guard(std::thread& t_):
+    t(t_)
+  {}
+  ~thread_guard()
+  {
+    if(t.joinable()) // 1
+    {
+      t.join();      // 2
+    }
+  }
+  thread_guard(thread_guard const&)=delete;   // 3
+  thread_guard& operator=(thread_guard const&)=delete;
+};
+struct func;
+void f()
+{
+  int some_local_state=0;
+  func my_func(some_local_state);
+  std::thread t(my_func);
+  thread_guard g(t);
+  do_something_in_current_thread();
+}    // 4
+```
+
+改写后的：
+
+```cpp
+class scoped_thread
+{
+  std::thread t;
+public:
+  explicit scoped_thread(std::thread t_):                 // 1
+    t(std::move(t_))
+  {
+    if(!t.joinable())                                     // 2
+      throw std::logic_error(“No thread”);
+  }
+  ~scoped_thread()
+  {
+    t.join();                                            // 3
+  }
+  scoped_thread(scoped_thread const&)=delete;
+  scoped_thread& operator=(scoped_thread const&)=delete;
+};
+struct func; // 定义在清单2.1中
+void f()
+{
+  int some_local_state;
+  scoped_thread t(std::thread(func(some_local_state)));    // 4
+  do_something_in_current_thread();
+}                                                        // 5
+```
+
+这里有几点不同：
+1. 对于线程是否可加入的判断放在了构造函数这里
+2. 这里的4出现了初始化传参，为什么没有出现问题一（传入临时的callable对象，编译器会认为是函数声明）？可能是因为带参数和不带参数？
+
+### 2.3.2 线程自动化
+
+如果`std::thread`对象的容器是移动敏感的，那么移动操作同样适用于这些容器，可以将`std::thread`放入`std::vector`中，创建一组线程，进行线程自动化管理
+
+```cpp
+void do_work(unsigned id);
+void f()
+{
+  std::vector<std::thread> threads;
+  for(unsigned i=0; i < 20; ++i)
+  {
+    threads.push_back(std::thread(do_work,i)); // 产生线程
+  } 
+  std::for_each(threads.begin(),threads.end(),
+                  std::mem_fn(&std::thread::join)); // 对每个线程调用join()
+}
+```
+
+其中`std::men_fn`是类成员函数指针，可以将类的成员函数转换为一个可调用对象，这里也就是对于每一个线程调用join()函数。可以简单的将其理解为复用的指针。
+
+
+## 2.4 运行时决定线程数量
+
+`std::thread::hardware_concurrency()`函数返回能并发在一个程序中的线程数量，可以用于设定程序运行的线程数。
+
+下面有一个并行版的`std::accumulate`，将整体工作拆分成小任务交给每个线程做，对于简单的多线程编程可以作为借鉴：
+
+```cpp
+template<typename Iterator, typename T>
+struct accumulate_block
+{
+  
+}
+
+```
