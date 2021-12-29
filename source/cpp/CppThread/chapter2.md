@@ -522,3 +522,29 @@ int main()
 10. 对于每一个线程调用`std::thread::join`，等待结果返回。
 
 这里我使用1-10的数组进行测试，可以看到在数量很小的情况下，多线程使用的时间比单线程要多。
+
+
+## 2.5 标识线程
+
+线程标识类型为`std::thread::id`，可以通过以下两种方式获取：
+- `std::thread::get_id()`
+
+  调用对象的成员函数获取id，如果该对象没有与任何执行线程关联，将返回`std::thread::type`默认构造值，该值标识无线程。
+
+- `std::this_thread::get_id()`
+  
+  在当前线程中调用该函数，可以直接获得线程标识。
+
+线程标识对象可以拷贝、对比、排序，作为容器的键值进行查找等。`std::thread::id`实例常用于检测线程是否需要进行一些操作，比如用线程来分割一些工作，主线程可能要做一些和其他线程不同的工作，示例如下：
+
+```cpp
+std::thread::id master_thread;
+void some_core_part_of_algorithm()
+{
+  if(std::this_thread::get_id()==master_thread)
+  {
+    do_master_thread_work();
+  }
+  do_common_work();
+}
+```
