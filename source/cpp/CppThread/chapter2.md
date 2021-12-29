@@ -433,10 +433,92 @@ void f()
 下面有一个并行版的`std::accumulate`，将整体工作拆分成小任务交给每个线程做，对于简单的多线程编程可以作为借鉴：
 
 ```cpp
-template<typename Iterator, typename T>
+#include <numeric>
+#include <iostream>
+#include <iterator>
+#include <thread>
+#include <vector>
+#include <algorithm>
+#include <functional>
+#include <time.h>
+
+template <typename Iterator, typename T>
 struct accumulate_block
 {
-  
+    void operator()(Iterator first, Iterator last, T &result)
+    {
+        result = std::accumulate(first, last, result);
+    }
+};
+
+template <typename Iterator, typename T>
+T paralle_accumulate(Iterator first, Iterator last, T init)
+{
+    unsigned long const length = std::distance(first, last);
+
+    if (!length) // 1
+    {
+        return init;
+    }
+
+    // 2
+    unsigned long const min_per_thread = 25;
+    unsigned long const max_threads = (length + min_per_thread - 1) / min_per_thread;
+
+    unsigned long const hardware_threads = std::thread::hardware_concurrency(); // 3
+
+    unsigned long const num_threads = std::min(hardware_threads != 0 ? hardware_threads : 2, max_threads); // 4
+
+    unsigned long const block_size = length / num_threads; // 5
+
+    // 6
+    std::vector<T> results(num_threads);
+    std::vector<std::thread> threads(num_threads - 1);
+
+    Iterator block_start = first;
+    for (unsigned long i = 0; i < (num_threads - 1); ++i)
+    {
+        Iterator block_end = block_start;
+        std::advance(block_end, block_size); // 7
+        threads[i] = std::thread(accumulate_block<Iterator, T>(), block_start, block_end, std::ref(results[i])); //8
+        block_start = block_end;
+    }
+
+    accumulate_block<Iterator, T>()(block_start, last, results[num_threads - 1]); // 9
+
+    std::for_each(threads.begin(), threads.end(), std::mem_fn(&std::thread::join)); // 10
+
+    return std::accumulate(results.begin(), results.end(), init);
 }
 
+int main()
+{
+    std::vector<int> input = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int result = 0;
+    double start_paralle, end_paralle, start_std, end_std;
+    start_paralle = clock();
+    result = paralle_accumulate(input.begin(), input.end(), 0);
+    end_paralle = clock();
+    std::cout << result << " time use: " << end_paralle - start_paralle << std::endl;
+
+    start_std = clock();
+    result = std::accumulate(input.begin(), input.end(), 0);
+    end_std = clock();
+    std::cout << result << " time use: " << end_std - start_std << std::endl;
+    return 0;
+}
 ```
+
+这里程序不复杂，同时我在main函数中进行了测试，程序说明如下：
+1. 进行长度判定，如果迭代器传入的容器长度是0，就返回初始值。
+2. 进行最大线程和最小线程数限制。
+3. 获得硬件可运行的最大线程数。
+4. 两者比较取最小值。
+5. 根据使用的线程数，将容器等长划分。
+6. 因为最后需要汇总各线程的结果，因此这里有results和threads的存储容器，同时因为主线程也作为一个线程运算，所以创建的线程数需要-1.
+7. 确定迭代器指针首尾。
+8. 创建临时`std::thread`对象，并转移所有权给相应的`thread[i]`。
+9. 主线程运算。
+10. 对于每一个线程调用`std::thread::join`，等待结果返回。
+
+这里我使用1-10的数组进行测试，可以看到在数量很小的情况下，多线程使用的时间比单线程要多。
