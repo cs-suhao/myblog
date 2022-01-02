@@ -37,5 +37,37 @@
 C++中通过`std::mutex`创建互斥量实例，可以通过lock()和unlock()上锁和解锁。但是实践中，C++标准库提供了一个RAll语法的模板类`std::lock_guard`，在构造时能提供已上锁的互斥量，在析构的时候进行解锁，从而保证一个已锁互斥量能够被正确解锁。
 
 ```cpp
+#include <list>
+#include <mutex>
+#include <algorithm>
+#include <thread>
+#include <iostream>
 
+std::list<int> some_list = {1, 2, 3, 4, 5};
+std::mutex some_mutex;
+
+void add_to_list(int new_value)
+{
+    std::lock_guard<std::mutex> guard(some_mutex);
+    some_list.push_back(new_value);
+}
+
+void list_contains(int value_to_find, bool& result)
+{
+    std::lock_guard<std::mutex> guard(some_mutex);
+    if (std::find(some_list.begin(), some_list.end(), value_to_find) != some_list.end())
+    {
+        result = false;
+    }
+}
+
+int main()
+{
+    bool result = true;
+    std::thread t2(list_contains, 6, std::ref(result));
+    std::thread t1(add_to_list, 6);
+    std::cout << result << std::endl;
+    return 0;
+}
 ```
+
