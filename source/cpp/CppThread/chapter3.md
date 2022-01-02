@@ -43,12 +43,12 @@ C++中通过`std::mutex`创建互斥量实例，可以通过lock()和unlock()上
 #include <thread>
 #include <iostream>
 
-std::list<int> some_list = {1, 2, 3, 4, 5};
-std::mutex some_mutex;
+std::list<int> some_list = {1, 2, 3, 4, 5}; // 1
+std::mutex some_mutex; // 2
 
 void add_to_list(int new_value)
 {
-    std::lock_guard<std::mutex> guard(some_mutex);
+    std::lock_guard<std::mutex> guard(some_mutex); // 3
     some_list.push_back(new_value);
 }
 
@@ -70,3 +70,17 @@ int main()
     return 0;
 }
 ```
+
+这里产生了几个问题：
+1. std::mutex是如何绑定共享数据的？
+   答：在lock_guard函数后，只要执行了lock_guard，对于后面的操作和数据都是互斥的。
+2. std::thread线程在运行函数时，如果函数有返回值，是如何返回的？
+   ？？
+
+注释：
+1. 全局变量
+2. 全局互斥量
+3. 调用lock_guard保护全局变量
+
+在大多数情况下，互斥量通常会与需要保护的数据放在同一类中，而不是定义成全局变量。
+
