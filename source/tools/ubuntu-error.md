@@ -51,6 +51,7 @@ python3 -m pip install *
 python3 -m pip --version
 ```
 
+
 ### 如何修改ubuntu上的时间
 在虚拟机上安装ubuntu以后，时间和当前时区的时间不一致，原因是安装的时候默认设置时区为`America/Los_Angeles`，通过以下命令进行调整：
 ```shell
