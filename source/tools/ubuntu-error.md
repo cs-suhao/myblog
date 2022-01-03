@@ -61,3 +61,43 @@ timedatectl
 
 sudo timedatectl set-timezone Asia/Shanghai
 ```
+
+### 如何设置Ubuntu上GitHub的代理
+在Ubuntu系统中，代理只能在浏览器中使用，之前每次都以为是订阅的问题，之后在终端中测试才发现没有使用代理，因此下面记录一下代理设置的过程：
+
+可以直接在文件中修改，规则在`.gitconfig`文件中
+
+```shell
+vim ~/.gitconfig
+```
+
+之后添加相应规则，具体规则和端口号可以通过梯子软件的`复制终端代理命令`查看，如果没有也可以通过设置中查看，因为区别就在于不同协议的端口号不一样。
+
+如果只需要在当前终端使用代理，仅需要使用一下命令：
+
+```shell
+export HTTP_PROXY=http://127.0.0.1:58591
+export HTTPS_PROXY=http://127.0.0.1:58591
+export ALL_PROXY=socks5://127.0.0.1:51837
+```
+
+使用命令设置设置代理：
+```shell
+// 使用http/https代理
+git config --global http.proxy http://127.0.0.1:58591
+git config --global https.proxy http://127.0.0.1:58591
+
+// 使用socks5代理
+git config --global http.proxy socks5://127.0.0.1:51837
+git config --global https.proxy socks5://127.0.0.1:51837
+```
+
+直接在`.gitconfig`文件中修改，直接添加：
+```
+[http]
+        proxy = http://127.0.0.1:58591
+[https]
+        proxy = http://127.0.0.1:58591
+```
+
+参考链接：[Git设置代理](https://www.jianshu.com/p/739f139cf13c)
