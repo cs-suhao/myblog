@@ -62,6 +62,7 @@ timedatectl
 sudo timedatectl set-timezone Asia/Shanghai
 ```
 
+
 ### 如何设置Ubuntu上GitHub的代理
 在Ubuntu系统中，代理只能在浏览器中使用，之前每次都以为是订阅的问题，之后在终端中测试才发现没有使用代理，因此下面记录一下代理设置的过程：
 
@@ -101,3 +102,4 @@ git config --global https.proxy socks5://127.0.0.1:51837
 ```
 
 参考链接：[Git设置代理](https://www.jianshu.com/p/739f139cf13c)
+```
