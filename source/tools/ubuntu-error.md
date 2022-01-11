@@ -1,7 +1,6 @@
 # Ubuntu使用汇总
 
-## 问题
-### sudo apt-get有锁
+## sudo apt-get有锁
 出现该问题的原因一般是之前在未完成下载的情况下将terminal close。此时 apt-get进程可能没有结束。结果，如果再次运行apt-get install 命令安装软件时，出现如上错误。即有另一个程序正在占用apt-get install进程，由于它在运行时，会占用软件源更新时的系统锁（简称‘系统更新锁’），此时资源被锁。
 
 解决方案：
@@ -25,7 +24,7 @@ sudo rm /var/lib/dpkg/lock
 ```
 
 
-### 如何安装pip
+## 如何安装pip
 用系统自带包管理器安装，命令如下：
 ```shell
 sudo apt-get install python3-pip
@@ -52,7 +51,7 @@ python3 -m pip --version
 ```
 
 
-### 如何修改ubuntu上的时间
+## 如何修改ubuntu上的时间
 在虚拟机上安装ubuntu以后，时间和当前时区的时间不一致，原因是安装的时候默认设置时区为`America/Los_Angeles`，通过以下命令进行调整：
 ```shell
 cat /etc/timezone
@@ -63,7 +62,7 @@ sudo timedatectl set-timezone Asia/Shanghai
 ```
 
 
-### 如何设置Ubuntu上GitHub的代理
+## 如何设置Ubuntu上GitHub的代理
 在Ubuntu系统中，代理只能在浏览器中使用，之前每次都以为是订阅的问题，之后在终端中测试才发现没有使用代理，因此下面记录一下代理设置的过程：
 
 可以直接在文件中修改，规则在`.gitconfig`文件中
@@ -102,4 +101,23 @@ git config --global https.proxy socks5://127.0.0.1:51837
 ```
 
 参考链接：[Git设置代理](https://www.jianshu.com/p/739f139cf13c)
-```
+
+
+
+## 如何在Ubuntu上安装OpenVPN
+
+参考连接：[Installation for Debian and Ubuntu](https://openvpn.net/cloud-docs/openvpn-3-client-for-linux/)
+
+1. 打开终端`ctrl + alt + T`
+2. 安装https传输包，`sudo apt install apt-transport-https`
+3. 下载openvpn的key，`sudo wget https://swupdate.openvpn.net/repos/openvpn-repo-pkg-key.pub`。
+   
+   但是这里由于终端没有开代理，因此一直下载不下来，我们需要在终端中加入代理名称（需要使用自己的梯子的代理命令，如果没有梯子就没办法了），`sudo wget -e "HTTPS_PROXY=http://127.0.0.1:58591" https://swupdate.openvpn.net/repos/openvpn-repo-pkg-key.pub`
+4. 验证添加key，`sudo apt-key add openvpn-repo-pkg-key.pub`
+5. 下载安装OpenVPN包，`sudo wget -e "HTTPS_PROXY=http://127.0.0.1:58591" -O /etc/apt/sources.list.d/openvpn3.list https://swupdate.openvpn.net/community/openvpn3/repos/openvpn3-focal.list`
+   
+   这里需要注意同样需要在wget中使用代理才能顺利下载。
+   同时需要修改的是对应系统的版本代号，具体系统的代号参见上面的参考链接，我使用的Ubuntu20.04代号为`focal`。
+6. 接下来使用`sudo apt update`和`sudo apt install openvpn3`，这里可能也需要使用代理，中间加入`-o Acquire::https::proxy="http://127.0.0.1:58591"`选项即可。
+
+
