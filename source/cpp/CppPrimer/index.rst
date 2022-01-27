@@ -1,11 +1,12 @@
-.. c++ language study.
+.. C++ Primer in Action 5th.
 
-Cpp
+C++ Primer
 ========================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   CppThread/index
-   CppPrimer/index
+   chapter1
+   chapter2
+   chapter3
