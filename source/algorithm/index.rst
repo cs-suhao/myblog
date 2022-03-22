@@ -1,12 +1,10 @@
-.. c++ language study.
+.. Algorithm study.
 
-Cpp
+算法学习
 ========================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   CppThread/index
-   CppPrimer/index
-   LeetCode/index
+   chapter1

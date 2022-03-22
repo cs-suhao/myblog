@@ -47,7 +47,7 @@
 
 - [ ] Efficient computation of frequent and top-k elements in data streams.
 
-- [ ] Hierarchical heavy hitters with the space saving algorithm
+- [x] Hierarchical heavy hitters with the space saving algorithm
 
   HHH问题可以扩展为用分层的方式管理频繁项数据，本文建立在space saving算法基础上，也就是文献【Efficient computation of frequent and top-k elements in data streams.】，在space saving算法中，维持计数器，并只对集合中的部分子集元素维护估算值，从而统计频繁项和top-k。
 

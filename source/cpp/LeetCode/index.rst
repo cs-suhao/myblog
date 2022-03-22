@@ -7,6 +7,6 @@ LeetCode learning notes.
    :maxdepth: 2
    :caption: Contents:
 
-   chapter1
-   chapter2
+   list
+   BinaryTree
    chapter3

@@ -12,6 +12,7 @@ cs-suhao的个人博客
 
    cpp/index
    python/index
+   algorithm/index
    tools/index
    linux/index
    papers/index
