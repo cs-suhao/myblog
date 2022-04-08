@@ -10,3 +10,4 @@ C++ Primer
    chapter1
    chapter2
    chapter3
+   const
