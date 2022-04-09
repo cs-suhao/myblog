@@ -11,3 +11,4 @@ C++ Primer
    chapter2
    chapter3
    const
+   static
