@@ -11,12 +11,13 @@ cs-suhao的个人博客
    :caption: 首页:
 
    cpp/index
-   python/index
+   .. python/index
    algorithm/index
    tools/index
    linux/index
    papers/index
    network/index
+   faceview/index
    reading/index
    movie/index
    cook/index
