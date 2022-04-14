@@ -1,6 +1,6 @@
-.. Linux study.
+.. Operating System study.
 
-Linux和Shell
+操作系统
 ========================================
 
 .. toctree::
@@ -9,3 +9,6 @@ Linux和Shell
 
    summary
    chapter1
+   chapter2
+   chapter3
+   chapter4
