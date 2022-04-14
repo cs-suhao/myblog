@@ -12,3 +12,4 @@ C++ Primer
    chapter3
    const
    static
+   this
