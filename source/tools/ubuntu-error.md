@@ -120,4 +120,22 @@ git config --global https.proxy socks5://127.0.0.1:51837
    同时需要修改的是对应系统的版本代号，具体系统的代号参见上面的参考链接，我使用的Ubuntu20.04代号为`focal`。
 6. 接下来使用`sudo apt update`和`sudo apt install openvpn3`，这里可能也需要使用代理，中间加入`-o Acquire::https::proxy="http://127.0.0.1:58591"`选项即可。
 
+## Ubuntu上使用Openvpn3
+
+- 建立会话：
+```shell
+# 我这里是openvpn.opvn文件
+openvpn3 session-start --config ${CONFIGURATION_PROFILE_NAME}
+```
+
+- 管理会话：
+```shell
+# 查看连接
+openvpn3 sessions-list
+# 通过配置文件管理会话
+openvpn3 session-manage --config ${CONFIGURATION_PROFILE_NAME} --restart
+openvpn3 session-manage --config ${CONFIGURATION_PROFILE_NAME} --disconnect
+```
+其他命令可以通过`--help`获得详细说明。
+
 
