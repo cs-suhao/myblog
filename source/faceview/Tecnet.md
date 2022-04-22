@@ -67,3 +67,105 @@ void quick_sort(int s[], int l, int r)
     }
 }
 ```
+
+## 2022.4.19 腾讯音乐 二面（女朋友）
+
+1. 自我介绍
+2. 过往的项目经验和课程等，和移动端开发的有契合的吗？
+3. 你学到的哪些知识，能够直接或者间接对移动端开发有优势。
+4. 有用编程语言写过一点小工具或者小项目吗？
+5. 有哪些学到的可以用到实习中？
+6. 最近学过什么什么课程
+
+### C++
+
+### 操作系统
+
+### 算法题
+
+二叉树的层序遍历
+```cpp
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> res;
+        list<TreeNode*> s;
+        if(!root) return res;
+        s.push_back(root);//入栈根节点
+        while(!s.empty()){
+            int sz = s.size();//得到当前层的节点数量
+            vector<int> temp;
+            for(int i=0;i<sz;i++){//每遍一个节点就插入其左右节点
+                temp.push_back(s.front()->val);
+                if(s.front()->left) s.push_back(s.front()->left);
+                if(s.front()->right) s.push_back(s.front()->right);
+                s.pop_front();
+            }
+            res.push_back(temp);
+        }
+        return res;
+    }
+
+};
+```
+
+```cpp
+class Solution {
+public:
+    int strToInt(string str) {
+        bool sign = false;
+        int idx = str.find_first_not_of(" ");
+        if(idx == -1 ) return 0;
+        str = str.substr(idx,str.length()-idx);
+        if(str.empty()) return 0;
+        if(str[0]=='-' || str[0]=='+') {
+            if(str[0]=='-') sign = true;
+            str = str.substr(1,str.length()-1);
+        }      
+        
+        if(str.empty()) return 0;
+        if(str[0]-'0'>9 ||str[0]-'0'<0 ) return 0;
+
+        string ans_str;
+        
+        int i = 0;
+        for(i=0;i<str.length();i++){
+            if(str[i]-'0'>9 ||str[i]-'0'<0 ){
+                break;
+            }
+            ans_str += str[i];
+        }
+        
+        idx = ans_str.find_first_not_of('0');
+        if(idx!=-1) ans_str = ans_str.substr(idx, ans_str.length()-idx);
+       // cout << ans_str <<endl;
+        if(ans_str.empty()) return 0;
+        int shu_lenl = ans_str.length();
+        int ans_abs = 0;
+        for(int i=0;i<shu_lenl;i++){
+          //  cout<<ans_abs<<' '<<i<<endl;
+            if(sign == true){
+                if((INT_MAX - ans_abs )/10 < (ans_str[shu_lenl-1-i]-'0')*pow(10,i-1)) 
+                    return INT_MIN;
+            }else{
+                if((INT_MAX -1- ans_abs )/10 < (ans_str[shu_lenl-1-i]-'0')*pow(10,i-1)) 
+                    return INT_MAX;
+            }         
+            ans_abs += (ans_str[shu_lenl-1-i]-'0')*pow(10,i);
+        }
+        return sign? -ans_abs:ans_abs;
+    }
+};
+```
+
+
+
+
+### 计网
+- 移动APP向服务端请求资源，从应用层到物理层都用到哪些协议呢？
+- 简要说一下IP协议
+- 一般会用什么端口号呢？
+- 根据一个IP地址，是如何找到服务器的呢？物理层是怎么找的呢？
+- 从我的手机输入一个网址，经过哪些设备到服务器呢？
+    - 从手机-基站-核心网交换机-路由器-服务器
+- 应用层常见的协议
