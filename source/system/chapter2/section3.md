@@ -70,13 +70,145 @@ while(1){
 
 #### 2.3.3.4 Peterson解法
 
-T. Dekker通过将锁变量于警告变量的思想结合，提出了一个不需要严格轮换的互斥算法。
+Peterson是一种简单的多的护持算法，代码如下：
+```c
+#define FALSE 0
+#define TRUE  1
+#define N     2
+
+int turn;
+int interested[N];
+
+void enter_region(int process){
+    int other;
+    other = 1-process;
+    interested[process] = TRUE;
+    turn = process;
+    while(turn == process && interested[other] == TRUE);
+}
+
+void leave_region(int process){
+    interested[process] = FALSE;
+}
+
+```
+
+在进入临界区前，各个进程使用其进程号0或1作为参数调用`enter_region`，该调用在需要时将使进程等待。即使两个进程同时调用`enter_region`，也会因为`turn`变量被重写导致只有一个进程可以进入，另一个进程会因为满足while的循环条件一直等待。
+
+#### 2.3.3.5 TSL指令
+
+这是一种需要硬件支持的方案。某些计算机中，特别是哪些设计为多处理器的计算机，都有下面一条指令：`TSL RX, LOCK`。称为**测试并加锁**(test ans set lock)，它将一个内存字lock读到寄存器RX中，然后在该内存地址上有一个非零值。读和写的操作保证是不可分割的，即该指令结束之前其他处理器均不允许访问该内存字。执行TSL指令的CPU将锁住内存总线，防止其他CPU在本指令结束前访问。
+
 
 ### 2.3.4 睡眠与唤醒
 
+Peterson解法和TSL解法都是正确的，但是有忙等待的缺点，两个方案的本质都是：当一个进程想进入临界区，先检查是否允许进入，若不允许，则该进程将原地等待，直到允许为止。
+
+但是这两个方案除了浪费CPU资源外，还会产生其他错误。考虑到两个优先级不同的进程L和进程H，调度规则规定只要H处于就绪态就可以运行，但是某一时刻L处于临界区，H准备运行。但是由于H处于忙等待，而L又不会被调度，那么H将会一直等待下去，会产生**优先级反转问题**。
+
+有一些进程间通信原语，可以在无法进入临界区时阻塞，而不是忙等待。分别是`sleep`和`wakeup`。
+
+#### 2.3.4.1 生产者-消费者问题
+
+我们考虑**生产者-消费者问题**，也称为**有界缓冲区问题**。两个进程共享一个公共的固定大小的缓冲区，其中一个是生产者，将信息放入缓冲区，另一个是消费者，从缓冲区中取出信息。
+
+含有严重竞争条件的生产者-消费者问题代码如下：
+
+```c
+#define N 100
+int count = 0;
+
+void producer(){
+    init item;
+    while(TRUE){
+        item = produce_item();
+        if(count == N) sleep();
+        insert_item(item);
+        count = count + 1;
+        if(count == 1) wakeup(consumer);
+    }
+}
+
+void consumer(){
+    init item;
+    while(TRUE){
+        if(count == 0) sleep();
+        item = remove_item();
+        count = count - 1;
+        if(count == N-1) wakeup(producer);
+        consume_item(item);
+    }
+}
+
+```
+
+如果我们在消费者刚刚读取`count`值就调度生产者，生产者使用`wakeup`但是消费者并没有真正睡眠，等调度回消费者，消费者开始睡眠，会导致消费者再也醒不过来。
+
 ### 2.3.5 信号量
 
+信号量使用一个整型变量累积唤醒次数，取值可以为0(表示没有保存下来的唤醒操作)或者为正值(表示有一个或多个唤醒操作)。对于信号量有两种操作:
+- `up`
+- `down`
+
+对信号量执行`down`操作，检查其值是否大于0，若大于0则减1(用掉一个保存的唤醒信号)并继续，若该值为0，则将进程睡眠，并且此时down操作并没有结束。
+
+对信号量执行`up`操作，对信号量的值加1。如果一个或多个进程在该信号量上睡眠，无法完成一个先前的down操作，则由系统选择其中一个并允许改进成完成down操作。
+
+
+**值注意的是，这两个操作都是原子操作，也就是说检查数值、修改变量以及可能发生的睡眠操作都是不可分割的**。
+
+#### 2.3.5.1 用信号量解决生产者-消费者问题
+
+```c
+#define N 100
+typedef int semaphore;
+semaphore mutex = 1;
+semaphore empty = N;
+semaphore full = 0;
+
+void producer(){
+    init item;
+    while(TRUE){
+        item = produce_item();
+        down(&empty);
+        down(&mutex);
+        insert_item(item);
+        up(&mutex);
+        up(&full);
+    }
+}
+
+void consumer(){
+    init item;
+    while(TRUE){
+        down(&full);
+        down(&mutex);
+        item = remove_item();
+        up(&mutex);
+        up(&empty);
+        consume_item(item);
+    }
+}
+
+```
+
+1. `mutex`信号量的作用是保证只有一个进程可以进入临界区
+2. `empty`和`full`信号量的作用是实现同步，保证当缓冲区满的时候生产者停止运行，以及当缓冲区空的时候消费者停止运行。
+
 ### 2.3.6 互斥量
+
+如果不需要信号量的计数能力，可以使用信号量的简化版本——**互斥量**。互斥量仅适用于管理共享资源或一小段代码。
+
+互斥量是一个可以处于两态之一的变量：解锁和加锁。当一个进程/线程需要访问临界区，调用`mutex_lock`，如果该互斥量当前是解锁的，即临界区可用，则调用成功。另一方面，如果该互斥量已经被加锁，调用线程被阻塞，直到临界区中的线程完成并调用`mutex_unlock`。
+
+`mutex_lock`和TSL指令中的`enter_region`很像，但是不一样在于：enter_region进入临界区失败后，会进入忙等待，在内核态中，这个进程会由于时间片用完，调度其他进程运行，可以让拥有锁的进程运行并释放锁。
+而如果在用户态中，进程不会释放CPU资源，因此有锁的进程无法运行也就无法释放锁，没有锁的进程又一直在忙等待，不会退出。
+
+所以`mutex_lock`避免了忙等待，在该线程/进程下次运行时，再一次对锁进行测试。
+
+#### 2.3.6.1 futex
+
+#### 2.3.6.2 pthread中的互斥量
 
 ### 2.3.7 管程
 
