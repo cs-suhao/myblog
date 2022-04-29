@@ -9,6 +9,6 @@
 
    Bytedance
    Meituan
-   Tecent
+   Tencent
    360
    
