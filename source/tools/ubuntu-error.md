@@ -138,4 +138,26 @@ openvpn3 session-manage --config ${CONFIGURATION_PROFILE_NAME} --disconnect
 ```
 其他命令可以通过`--help`获得详细说明。
 
+## 如何生成项目中的目录树
+
+通过`mddir`这个包，具体步骤为：
+1. 安装`npm`
+   
+   ```shell
+   sudo apt-get install npm
+   ```
+2. 安装`mddir`
+   
+   ```shell
+   sudo npm install mddir -g
+   ```
+3. 生成目录树
+   
+   ```shell
+   cd dir
+   mddir
+   ```
+
+在所在目录下，就会有`directoryList.md`文件。
+
 
