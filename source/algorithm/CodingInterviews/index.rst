@@ -1,11 +1,10 @@
-.. Algorithm study.
+.. 剑指Offer records.
 
-算法学习
+剑指Offer learning notes.
 ========================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   chapter1
-   LeetCode/index
+   chapter2
