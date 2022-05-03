@@ -15,9 +15,10 @@ cs-suhao的个人博客
    linux/index
    system/index
    network/index
+   computer/index
+   tools/index
    algorithm/index
    faceview/index
-   tools/index
    papers/index
    reading/index
    movie/index
