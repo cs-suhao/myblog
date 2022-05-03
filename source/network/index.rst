@@ -7,7 +7,7 @@ Network 相关
    :maxdepth: 2
    :caption: Contents:
 
-   chapter1
+   chapter1/index
    chapter2/index
    chapter3/index
    chapter4/index
