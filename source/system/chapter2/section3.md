@@ -208,11 +208,93 @@ void consumer(){
 
 #### 2.3.6.1 futex
 
+futex称为快速用户空间互斥，实现了基本的锁。首先我们知道自旋锁的如果等待时间长，会浪费CPU周期，而如果改用阻塞进程，却有很多花销在内核切换上。因此有人提出了futex的解决方案。
 
+futex能够更快的原因在于，一般而言它实现了锁，但是不需要陷入内核，除非真的有必要。
+
+futex包含两个部分：**内核服务**和**用户库**。内核服务提供了一个等待队列，允许多个进程在一个锁上等待。而等待队列中的进程是需要系统调用才能放入和接触阻塞，因此内核开销会比较大，一般而言能不用就不用。当没有竞争的时候，futex完全在用户空间工作。
+
+简要来说，就是一个线程检查锁是否被占用，如果被占用，会通过系统调用把线程放入等待队列中，直到锁被释放；如果锁没有被占用，则不需要在内核态切换线程，直接调用即可。
 
 #### 2.3.6.2 pthread中的互斥量
 
+pthread提供了一些用来同步线程的函数，本质都是使用一个可以被锁定和解锁的互斥量来保护每个临界区。
+
+互斥量相关的pthread调用函数如下：
+- `pthread_mutex_init`：创建一个互斥量
+- `pthread_mutex_destroy`：撤销一个互斥量
+- `pthread_mutex_lock`：获得一个锁，如果失败会阻塞调用者
+- `pthread_mutex_trylock`：获得一个锁，如果失败会返回错误代码
+- `pthread_mutex_unlock`：释放一个锁
+
+
+除了互斥量之外，pthread还提供了另一种同步机制：**条件变量**。条件变量是用在允许线程由于一些未达到的条件而阻塞。
+
+条件变量相关的pthread调用函数：
+- `pthread_cond_init`：创建一个条件变量
+- `pthread_cond_destroy`：撤销一个条件变量
+- `pthread_cond_wait`：阻塞以等待一个信号
+- `pthread_cond_signal`：向另一个线程发信号来唤醒
+- `pthread_cond_broadcast`：向多个线程发信号来全部唤醒
+
+通过生产者-消费者问题举例：生产者需要将产品放入缓存中，通过互斥量可以进行原子性检查，不受其他线程干扰。而当缓冲区满了，生产者需要一种方法阻塞自己并在以后被唤醒，这就是条件变量的事情。在*信号量*这一小节中，信号量的第一个作用是互斥，第二个作用是同步，这里条件变量也就是同步的作用。
+
+```c
+//图2.3.2,利用线程解决生产者消费者问题
+
+#include <stdio.h>
+#include <pthread.h>
+#define MAX 100000000
+pthread_mutex_t the_mutex;
+pthread_cond_t condc, condp;
+int buffer = 0;
+
+void *producer(void *ptr){
+    int i;
+    for(i = 1; i<=MAX; i++){
+        pthread_mutex_lock(&the_mutex);
+        while(buffer!=0){
+            pthread_cond_wait(&condp, &the_mutex);
+        }
+        buffer = i;
+        pthread_cond_signal(&condc);
+        pthread_mutex_unlock(&the_mutex);
+    }
+    pthread_exit(0);
+}
+
+void *consumer(void *ptr){
+    int i;
+    for(i=1; i<=MAX; i++){
+        pthread_mutex_lock(&the_mutex);
+        while(buffer==0){
+            pthread_cond_wait(&condc, &the_mutex);
+        }
+        buffer = 0;
+        pthread_cond_signal(&condp);
+        pthread_mutex_unlock(&the_mutex);
+    }
+    pthread_exit(0);
+}
+
+int main(){
+    pthread_t pro,con;
+    pthread_mutex_init(&the_mutex,0);
+    pthread_cond_init(&condc,0);
+    pthread_cond_init(&condp,0);
+    pthread_create(&con,0,consumer,0);
+    pthread_create(&pro,0,producer,0);
+    pthread_join(pro,0);
+    pthread_join(con,0);
+    pthread_cond_destroy(&condc);
+    pthread_cond_destroy(&condp);
+    pthread_mutex_destroy(&the_mutex);
+}
+```
+
 ### 2.3.7 管程
+
+
 
 ### 2.3.8 消息传递
 
