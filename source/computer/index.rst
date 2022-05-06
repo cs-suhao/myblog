@@ -1,6 +1,6 @@
 .. Computer Systems A Programmer's Perspective study.
 
-深入理解计算机系统 学习
+深入理解计算机系统
 ========================================
 
 .. toctree::
