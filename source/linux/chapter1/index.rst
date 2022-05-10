@@ -1,12 +1,11 @@
 .. Linux study.
 
-Linux和Shell
+Chapter 1. 初识Linux Shell
 ========================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   chapter1/index
-   chapter2/index
-   summary
+   section1
+   section2

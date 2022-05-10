@@ -1,12 +1,11 @@
 .. Linux study.
 
-Linux和Shell
+Chapter 2. 走进Shell
 ========================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   chapter1/index
-   chapter2/index
-   summary
+   section1
+   section2
