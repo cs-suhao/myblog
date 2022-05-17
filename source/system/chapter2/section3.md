@@ -70,7 +70,7 @@ while(1){
 
 #### 2.3.3.4 Peterson解法
 
-Peterson是一种简单的多的护持算法，代码如下：
+Peterson是一种简单的多的互斥算法，代码如下：
 ```c
 #define FALSE 0
 #define TRUE  1
