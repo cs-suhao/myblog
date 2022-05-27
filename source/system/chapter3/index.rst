@@ -13,3 +13,4 @@
    section4
    section5
    section6
+   section7
