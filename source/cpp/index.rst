@@ -7,8 +7,9 @@ C++学习
    :maxdepth: 2
    :caption: Contents:
 
-   summary
-   cpp_basic
+   CppBasic/index
+   .. cpp_basic
    CppThread/index
-   CppPrimer/index
-   LeetCode/index
+   .. CppPrimer/index
+   .. LeetCode/index
+   summary
