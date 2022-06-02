@@ -10,3 +10,4 @@ Chapter 1. 类型与声明
    section1
    section2
    section3
+   section4
