@@ -9,3 +9,4 @@ Chapter 2. 指针、数组与引用
 
    section1
    section2
+   section3
