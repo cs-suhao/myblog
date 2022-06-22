@@ -11,4 +11,8 @@
    Meituan
    Tencent
    360
+   qushi
+   didi
+   zhaoshang
+
    
