@@ -28,3 +28,5 @@ void backtrack(路径,选择列表){
 ### LeetCode 51. N皇后
 
 ### LeetCode 698. 划分为k个相等子集
+
+### 不超过K个逆序对的N排列
