@@ -23,5 +23,5 @@ cs-suhao的个人博客
    reading/index
    movie/index
    cook/index
-   about
+   .. about
 
