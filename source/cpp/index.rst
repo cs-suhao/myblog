@@ -7,6 +7,7 @@ C++学习
    :maxdepth: 2
    :caption: Contents:
 
+   cppsummary
    CppBasic/index
    .. cpp_basic
    CppThread/index
