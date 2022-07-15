@@ -14,5 +14,7 @@
    qushi
    didi
    zhaoshang
+   gongshang
+   guotai
 
    
